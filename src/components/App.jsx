@@ -14,16 +14,22 @@ export const App = () => {
     }
   };
 
-  const handleOnClick = e => {
+  const handleOnSubmit = e => {
     e.preventDefault();
     setContactList(prev => [...prev, { name, phoneNumber }]);
     setName('');
     setPhoneNumber('');
   };
+
+  const handleOnDelete = (e, id) => {
+    e.preventDefault();
+    setContactList(prev => [...prev.splice(id, 1)]);
+  };
+
   return (
     <>
       <h1>Phonebook</h1>
-      <form onSubmit={handleOnClick}>
+      <form onSubmit={handleOnSubmit}>
         <h2>Name:</h2>
         <input
           type="text"
@@ -47,7 +53,8 @@ export const App = () => {
           {contactList.map((value, index) => {
             return (
               <li key={index}>
-                {value.name} {value.phoneNumber}
+                {value.name} {value.phoneNumber}{' '}
+                <button onClick={e => handleOnDelete(e, index)}>Delete</button>
               </li>
             );
           })}
