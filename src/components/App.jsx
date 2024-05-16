@@ -1,9 +1,13 @@
+import { addContact, deleteContact, setFilter } from 'contactSlice';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 export const App = () => {
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [contactList, setContactList] = useState([]);
+  const dispatch = useDispatch();
+  const contactList = useSelector(state => state.contacts.contacts);
+  const filter = useSelector(state => state.contacts.filter);
 
   const handleOnChange = e => {
     if (e.target.name === 'firstName') {
@@ -12,18 +16,21 @@ export const App = () => {
     if (e.target.name === 'phone') {
       setPhoneNumber(e.target.value);
     }
+    if (e.target.name === 'filter') {
+      dispatch(setFilter(e.target.value));
+    }
   };
 
   const handleOnSubmit = e => {
     e.preventDefault();
-    setContactList(prev => [...prev, { name, phoneNumber }]);
+    dispatch(addContact({ name, phoneNumber }));
     setName('');
     setPhoneNumber('');
   };
 
   const handleOnDelete = (e, id) => {
     e.preventDefault();
-    setContactList(prev => [...prev.splice(id, 1)]);
+    dispatch(deleteContact(id));
   };
 
   return (
@@ -58,6 +65,23 @@ export const App = () => {
               </li>
             );
           })}
+        </ul>
+      </div>
+      <div>
+        <h3>Find contact by name:</h3>
+        <input
+          type="text"
+          name="filter"
+          value={filter}
+          onChange={handleOnChange}
+        />
+        <ul>
+          {filter &&
+            contactList
+              .filter(filteredValue =>
+                filteredValue.name.toLowerCase().includes(filter.toLowerCase())
+              )
+              .map((val, index) => <li key={index}>{val.name}</li>)}
         </ul>
       </div>
     </>
